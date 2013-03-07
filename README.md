@@ -12,11 +12,11 @@ Use raw sql files for your database
 
 ## Migrations folder
 You and your team create new files and name them with the following syntax (ignore the spaces):
-YEAR MONTH DAY HOUR MINUTE - COMMENTS .sql
+`YEAR MONTH DAY HOUR MINUTE - COMMENTS .sql`
 
 Examples:
-201212101233-Added_indexes.sql
-201212101255-Added_new_table.sql
+- 201212101233-Added_indexes.sql
+- 201212101255-Added_new_table.sql
 
 
 ## Defining migrations
