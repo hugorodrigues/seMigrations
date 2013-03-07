@@ -73,19 +73,6 @@ After simples run it:
 
 
 
-
-### Initialize
-Before you start you need a instance of seDatabase already connected to your database and define a control table (that will get created automatically) and the directory of your migration files
-```php
-$migrations = new seDatabaseMigrate($db, array(
-      'ctrlTable' => '_seDatabaseMigrations',
-      'migrationsFolder' => '/Volumes/Work/sites/framework2013/seDatabaseMigrate/demo/migrations/2/',
-));
-```
-
-
-
-
 ## Using programmatically
 You should read the `seMigrations` code, but basically all you need is getMigrationStatus() and  migrate()
 
