@@ -1,0 +1,61 @@
+#!/usr/bin/php
+<?php
+//     seMigrations.php
+//     http://starteffect.com | https://github.com/hugorodrigues
+//     (c) Copyright 2010-2013 Hugo Rodrigues, StartEffect U. Lda
+//     This code may be freely distributed under the MIT license.
+
+// Set you migration details + database access
+$config = array(
+  'ctrlTable' => '_seDatabaseMigrations',						// A table for control. Will be auto created in your db
+  'migrationsFolder' => './demoMigrations/',				// The folder for the migrations directory
+  'db' => array(
+		'dsn' => 'mysql:host=localhost;dbname=yourDb', 	// The pdo dsn for your database
+		'user' => 'yourUserName', 											// Db username (if required)
+		'password' => 'yourPassword'										// Db password (if required)
+  )
+);
+
+
+// Load it
+include ('seMigrations.php');
+$migrations = new seMigrations($config);
+
+
+// Get user Input
+$request = trim($_SERVER["argv"][1]);
+
+
+// Do the migration (id requested)
+if ($request != '' && $request != 'help')
+	$report = $migrations->migrate($request);
+
+
+// Interface
+echo "\n";
+echo "   \033[00;1m        __               __  \033[0m\033[01;31m        ___   ___              __   \033[0m\n";
+echo "   \033[00;1m.-----.|  |_.---.-.----.|  |_\033[0m\033[01;31m.-----.'  _|.'  _|.-----.----.|  |_ \033[0m\n";
+echo "   \033[00;1m|__ --||   _|  _  |   _||   _\033[0m\033[01;31m|  -__|   _||   _||  -__|  __||   _|\033[0m\n";
+echo "   \033[00;1m|_____||____|___._|__|  |____\033[0m\033[01;31m|_____|__|  |__|  |_____|____||____|\033[0m\n";
+echo "   \n";
+
+$cursor = "\033[01;31m ->\033[0m";
+$status = $migrations->getMigrationStatus();
+
+echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n";
+echo ($status['currentMigration'] == 0 ? $cursor: '   ')." [000000000000]  No Migration\n";
+foreach ($status['migrations'] as $k => $v)
+	echo ($status['currentMigration'] == $k ? $cursor: '   ')." [$k]  ".$v['comment']."\n";
+echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n\n";
+
+if ($request == '' || $request == 'help')
+	die(" Usage: migrate <destination>\n"."        migrate latest \n\n");
+
+
+if ($report === true)
+	echo " Finish: Nothing to do! \n\n";
+else
+if ($report === false)
+	echo " Error: Invalid migration. \n\n";
+else
+	echo " ".($report[0][0]>$report[count($report)-1][0] ? 'Downgrade': 'Upgrade')." complete from ".$report[0][0].' to '.$report[count($report)-1][0]."\n\n";
