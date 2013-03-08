@@ -51,7 +51,7 @@ You can use multiple querys in one migration, just like a regular dump.
 
 
 
-## Using the build-in interface
+## Using the built-in interface
 
 There are two main options:
 
