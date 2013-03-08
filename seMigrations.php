@@ -12,7 +12,8 @@ class seMigrations {
     $this->config = $config;
 
     try {
-      $this->pdo = new PDO($config['db']['dsn'], $config['db']['user'], $config['db']['password'], $config['db']['options']);
+      $this->pdo = new PDO($config['db']['dsn'], $config['db']['user'], $config['db']['password']);
+      $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $error) {
         die("ERROR: Invalid Database configuration. \n");
     }
@@ -72,25 +73,35 @@ class seMigrations {
         }
 
     $result = array(
-      'migrations' => $result,      
-      'currentMigration' => (int)$this->dbGetVar('select actual_migration from '.$this->config['ctrlTable'].' where migrations_folder = :folder', array(':folder' => $this->config['migrationsFolder'])),
+      'migrations' => $result,
+      'lastMigration' => end(array_keys($result)),      
+      'currentMigration' => $this->dbGetVar('select actual_migration from '.$this->config['ctrlTable'].' where migrations_folder = :folder', array(':folder' => $this->config['migrationsFolder'])),
     );
 
     return $result;
   }
 
 
-  private function dbGetVar($sql='',$params='')
+  private function dbGetVar($sql='',$params=array())
   {
-      $tmp = $this->dbQuery($sql, $params);
-      $res = $tmp->fetch(PDO::FETCH_NUM);
-      return $res[0];
+    try {
+      $sth = $this->pdo->prepare($sql);
+      $sth->execute($params); 
+      $result = $sth->fetch(PDO::FETCH_NUM);
+      $sth->closeCursor();
+      return $result[0];
+    }
+    catch(Exception $exception)
+    {
+      return die($exception);
+    }
   }
 
-  private function dbQuery($sql, $params='', $status= false){
+  private function dbQuery($sql, $params=array(), $status= false){
     try {
       $tmp = $this->pdo->prepare($sql);
-      if (is_array($params)) $result = $tmp->execute($params); else  $result = $tmp->execute();
+      $tmp->execute($params); 
+      $tmp->closeCursor();
     }
     catch(Exception $exception)
     {

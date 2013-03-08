@@ -3,10 +3,9 @@ Dead simple database migration utility for PDO (Mysql, pgSQL, sqLite).
 
 * Simple usage - Use the CLI or programmatically in your App
 * Decoupled - No dependencies and Less than 130 Lines of code
-* Straightforward - No magic method or incomplete DSL for you. Use raw sql (like a real man)
+* Straightforward - No abstraction or incomplete DSL: Use raw sql (like a real man!)
 
 <img src="http://i.imgur.com/GRAmGtg.png" width="650" border = "0"/>
-
 
 ---
 
@@ -16,8 +15,8 @@ You and your team create new files and name them with the following syntax (igno
 `YEAR MONTH DAY HOUR MINUTE - COMMENTS .sql`
 
 Examples:
-- 201212101233-Added_indexes.sql
-- 201212101255-Added_new_table.sql
+- `201212101233-Added_indexes.sql`
+- `201212101255-Added_new_table.sql`
 
 
 ---
@@ -46,15 +45,20 @@ DROP TABLE `example1`;
 ```
 
 If you run this migration it will create the table example1, if you rollback it will delete it.
-
+You can use multiple querys in one migration, just like a regular dump.
 
 ---
 
 
 
-## Usage
+## Using the build-in interface
+
+There are two main options:
+
+### Download, edit and use
+
 Edit the ```seMigrations``` script and set your configuration:
-```sql
+```php
 $config = array(
   'ctrlTable' => '_seDatabaseMigrations',						// A table for control. Will be auto created
   'migrationsFolder' => './demoMigrations/',				// The folder for the migrations directory
@@ -68,8 +72,43 @@ $config = array(
 
 After simples run it:
 ```bash
-./seMigrations
+$ ./seMigrations
 ```
+
+
+### Full installation
+
+The best way to use this script is puting your config in a separate file and pass the argument --conf=/path/toConf to the command. (In this way you can use seMigration in multiple projects using a unique and upgradable version )
+
+Chose a path like /etc/seMigrationConf or /your/web/framework/conf/seMigrationConf to put your config:
+```php
+$seMigrationsConfig = array(
+  'migrationsFolder' => './demoMigrations/',				// The folder for the migrations directory
+  'db' => array(
+		'dsn' => 'mysql:host=localhost;dbname=yourDb', 	// The pdo dsn for your database
+		'user' => 'yourUserName', 											// Db username (if required)
+		'password' => 'yourPassword'										// Db password (if required)
+  )
+);
+```
+
+Test it
+```bash
+$ ./seMigrations --config=/etc/seMigrationConf
+```
+
+Of course you can create a alias command and put in your path for usability:
+```bash
+$ echo "/full/path/to/seMigrations --config=/etc/seMigrationConf $@" > /bin/seMigrations
+$ chmod +x /bin/seMigrations
+```
+
+Now you run from anywhere in your system:
+```bash
+$ seMigrations
+```
+
+
 
 
 

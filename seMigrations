@@ -1,29 +1,46 @@
 #!/usr/bin/php
 <?php
+
 //     seMigrations.php
 //     http://starteffect.com | https://github.com/hugorodrigues
 //     (c) Copyright 2010-2013 Hugo Rodrigues, StartEffect U. Lda
 //     This code may be freely distributed under the MIT license.
 
+
+
 // Set you migration details + database access
 $config = array(
   'ctrlTable' => '_seDatabaseMigrations',						// A table for control. Will be auto created in your db
-  'migrationsFolder' => './demoMigrations/',				// The folder for the migrations directory
+  'migrationsFolder' => '/your/migrations/folder/',	// The folder for the migrations directory
   'db' => array(
 		'dsn' => 'mysql:host=localhost;dbname=yourDb', 	// The pdo dsn for your database
-		'user' => 'yourUserName', 											// Db username (if required)
+		'user' => 'yourUser', 													// Db username (if required)
 		'password' => 'yourPassword'										// Db password (if required)
   )
 );
 
 
-// Load it
-include ('seMigrations.php');
-$migrations = new seMigrations($config);
-
 
 // Get user Input
-$request = trim($_SERVER["argv"][1]);
+array_shift($_SERVER["argv"]);
+
+foreach($_SERVER["argv"] as $k=>$v)
+	if (substr($v, 0,9) == '--config=')
+		if (is_readable(substr($v, 9)))
+			{
+				include_once(substr($v, 9));
+				$config = array_merge($config, $seMigrationsConfig);
+
+				unset($_SERVER["argv"][$k]);
+			} else die("Invalid external config file.\n");
+
+$request = @trim(end($_SERVER["argv"]));
+
+
+
+// Load it
+include ('/hiper/apps/api/plugins/seMigrations/seMigrations.php');
+$migrations = new seMigrations($config);
 
 
 // Do the migration (id requested)
